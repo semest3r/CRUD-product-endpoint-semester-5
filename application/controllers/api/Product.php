@@ -52,6 +52,20 @@ class Product extends RestController{
         }
     }
 
+    public function deleteProduct_delete($data){
+        $product = new ModelProduct;
+        if (!empty($data)){
+            $del = $product->deleteProduct($data);
+            if ($del != False) {
+                $this->response($data, 200);
+            } else {
+                $this->response(array('status'=>'Delete Failed'), 404);
+            }
+        } else {
+            $this->response(array('status'=>'Delete Failed'), 400);
+        }
+    }
+
     public function category_get(){
         $category = new ModelProduct;
         $data = $category->getCategory();
@@ -75,6 +89,20 @@ class Product extends RestController{
             $this->response(array('status'=>'Data Already Registered'),400);
         }
 
+    }
+
+    public function deleteCategory_delete($data){
+        $category = new ModelProduct;
+        if (!empty($data)){
+            $del = $category->deleteCategory($data);
+            if ($del != False) {
+                $this->response($data, 200);
+            } else {
+                $this->response(array('status'=>'Delete Failed'), 404);
+            }
+        } else {
+            $this->response(array('status'=>'Delete Failed'), 400);
+        }
     }
 
     public function detail_get(){

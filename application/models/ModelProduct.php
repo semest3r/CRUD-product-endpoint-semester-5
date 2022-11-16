@@ -18,7 +18,6 @@ class ModelProduct extends CI_Model
 
     public function getCategoryByName($where = null)
     {
-
       return $this->db->get_where('category', $where)->result_array();
     }
 
@@ -30,6 +29,29 @@ class ModelProduct extends CI_Model
     public function createCategory($data = null)
     {
       return $this->db->insert('category', $data);
+    }
+
+    public function deleteCategory($data)
+    {
+      $this->db->where('id', $data);
+      $query = $this->db->get('category')->result();
+      if (!empty($query)){
+        $this->db->where('id', $data);
+        return $this->db->delete('category');
+      } else{
+        return False;
+      }
+    }
+    public function deleteProduct($data)
+    {
+      $this->db->where('id', $data);
+      $query = $this->db->get('product')->result();
+      if (!empty($query)){
+        $this->db->where('id', $data);
+        return $this->db->delete('product');
+      } else{
+        return False;
+      }
     }
 
     

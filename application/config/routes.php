@@ -62,7 +62,11 @@ $route['api/mahasiswa/klsmatkul'] = 'api/GetMahasiswa/klsmatkul';
 
 $route['api/product'] = 'api/Product/index';
 $route['api/product/detail'] = 'api/Product/detail';
-$route['api/product/category'] = 'api/Product/category';
+$route['api/category'] = 'api/Product/category';
+$route['api/category/delete/(:any)'] = 'api/Product/deleteCategory/$1';
+$route['api/product/delete/(:any)'] = 'api/Product/deleteProduct/$1';
+
+
 
 
 
