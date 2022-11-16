@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 16 Nov 2022 pada 03.05
+-- Waktu pembuatan: 16 Nov 2022 pada 15.24
 -- Versi server: 10.4.21-MariaDB
 -- Versi PHP: 8.0.10
 
@@ -32,16 +32,17 @@ CREATE TABLE `category` (
   `name_category` varchar(35) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data untuk tabel `category`
+-- Struktur dari tabel `detail`
 --
 
-INSERT INTO `category` (`id`, `name_category`) VALUES
-(1, 'test1'),
-(9, 'test10'),
-(2, 'test2'),
-(5, 'test3'),
-(3, 'test7');
+CREATE TABLE `detail` (
+  `id` int(11) NOT NULL,
+  `short_description` text NOT NULL,
+  `long_description` longtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -134,22 +135,9 @@ CREATE TABLE `product` (
   `name_product` varchar(128) NOT NULL,
   `code_product` varchar(8) NOT NULL,
   `image` varchar(255) NOT NULL DEFAULT 'default.jpg',
-  `id_category` int(11) NOT NULL
+  `id_category` int(11) NOT NULL,
+  `id_detail` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data untuk tabel `product`
---
-
-INSERT INTO `product` (`id`, `name_product`, `code_product`, `image`, `id_category`) VALUES
-(1, 'test1', '123', 'default.jpg', 1),
-(2, 'test2', '124', 'default.jpg', 2),
-(3, 'test3', '125', 'default.jpg', 2),
-(4, 'test4', '126', 'default.jpg', 2),
-(5, 'test5', '127', 'default.jpg', 2),
-(6, 'test6', '128', 'default.jpg', 2),
-(7, 'test7', '129', 'default.jpg', 2),
-(8, 'test10', '555', 'default.jpg', 1);
 
 --
 -- Indexes for dumped tables
@@ -161,6 +149,12 @@ INSERT INTO `product` (`id`, `name_product`, `code_product`, `image`, `id_catego
 ALTER TABLE `category`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_category` (`name_category`);
+
+--
+-- Indeks untuk tabel `detail`
+--
+ALTER TABLE `detail`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indeks untuk tabel `kelas`
@@ -194,7 +188,8 @@ ALTER TABLE `mata_kuliah`
 --
 ALTER TABLE `product`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_category` (`id_category`);
+  ADD KEY `fk_category` (`id_category`),
+  ADD KEY `fk_detail` (`id_detail`);
 
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang
@@ -205,6 +200,12 @@ ALTER TABLE `product`
 --
 ALTER TABLE `category`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT untuk tabel `detail`
+--
+ALTER TABLE `detail`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `kelas`
@@ -228,7 +229,7 @@ ALTER TABLE `mata_kuliah`
 -- AUTO_INCREMENT untuk tabel `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
@@ -245,7 +246,8 @@ ALTER TABLE `kls_matkul`
 -- Ketidakleluasaan untuk tabel `product`
 --
 ALTER TABLE `product`
-  ADD CONSTRAINT `fk_category` FOREIGN KEY (`id_category`) REFERENCES `category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_category` FOREIGN KEY (`id_category`) REFERENCES `category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_detail` FOREIGN KEY (`id_detail`) REFERENCES `detail` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -6,6 +6,7 @@ entity product{
     code_product : (VARCHAR)
     image : (VARCHAR)
     id_category : (FK)
+    id_detail : (FK)
 }
 
 
@@ -15,21 +16,14 @@ entity category{
     name_categoty : (VARCHAR)
 }
 
-entity detailproduct{
-    *id : INT (PK)
-    --
-    id_product : (FK)
-    id_detail : (FK)
-}
 
 entity detail{
     *id : INT (PK)
     --
-    short_description : (TINYTEXT)
+    short_description : (TEXT)
     long_description : (LONGTEXT)
 }
 
 product }|--|{ category
-detailproduct }|--|| product
-detailproduct }|--|| detail
+product }|--|| detail
 @enduml
