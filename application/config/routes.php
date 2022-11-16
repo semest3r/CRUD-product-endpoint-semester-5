@@ -61,10 +61,20 @@ $route['api/mahasiswa/kelas'] = 'api/GetMahasiswa/kelas';
 $route['api/mahasiswa/klsmatkul'] = 'api/GetMahasiswa/klsmatkul';
 
 $route['api/product'] = 'api/Product/index';
-$route['api/product/detail'] = 'api/Product/detail';
 $route['api/category'] = 'api/Product/category';
-$route['api/category/delete/(:any)'] = 'api/Product/deleteCategory/$1';
+$route['api/detail'] = 'api/Product/detail';
+
+$route['api/category/detail/(:any)'] = 'api/Product/categorySpesific/$1';
+$route['api/detail/detail/(:any)'] = 'api/Product/detailSpesific/$1';
+$route['api/product/detail/(:any)'] = 'api/Product/productSpesific/$1';
+
+$route['api/category/update/(:any)'] = 'api/Product/updateCategory/$1';
+$route['api/detail/update/(:any)'] = 'api/Product/updateDetail/$1';
+$route['api/product/update/(:any)'] = 'api/Product/updateProduct/$1';
+
 $route['api/product/delete/(:any)'] = 'api/Product/deleteProduct/$1';
+$route['api/category/delete/(:any)'] = 'api/Product/deleteCategory/$1';
+$route['api/detail/delete/(:any)'] = 'api/Product/deleteDetail/$1';
 
 
 
