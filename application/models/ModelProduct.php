@@ -91,7 +91,7 @@ class ModelProduct extends CI_Model
     }
 
   #Update Section
-  public function updateProduct($data = null, $where = null,)
+  public function updateProduct($data = null, $where = null)
   {
     $this->db->update('product', $data, $where);
     return True;

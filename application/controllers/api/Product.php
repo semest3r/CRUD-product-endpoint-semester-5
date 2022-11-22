@@ -89,7 +89,18 @@ class Product extends RestController{
             'id_detail' => $this->put('id_detail', true),
         ];
 
-        $this->response($data, 200);
+        $validasi = $product->getProductSpesific($where);
+        if ($validasi != False) {
+            $id = ['id' => $where];
+            $insert = $product->updateProduct($data, $id);
+            if ($insert != False) {
+                $this->response(['status' => $insert], 200);
+            } else {
+                $this->response($where, 502);
+            }
+        } else {
+            $this->response(array('status'=>'Update Failed, Data not Found'), 404);
+        }
     }
 
     public function productSpesific_get($where){
