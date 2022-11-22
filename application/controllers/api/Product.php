@@ -11,6 +11,13 @@ class Product extends RestController{
     public function __construct(){
         parent::__construct();
         $this->load->model('ModelProduct');
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+        die();
+        }
     } 
 
     ######PRODUCT SECTION#######
@@ -20,14 +27,14 @@ class Product extends RestController{
         $this->response($data, 200);
     }
 
-    public function index_post(){
+    public function createProduct_post(){
         $product = new ModelProduct;
 
         $config['upload_path'] = './assets/img/upload/';
         $config['allowed_types'] = 'jpg|png|jpeg';
         $config['max_size'] = '3000';
-        $config['max_width'] = '1024';
-        $config['max_height'] = '1000';
+        $config['max_width'] = '1280';
+        $config['max_height'] = '1280';
         $config['file_name'] = 'img' . time();
         $this->load->library('upload', $config);
         if ($this->upload->do_upload('image')) {
@@ -46,6 +53,7 @@ class Product extends RestController{
             'id_category' => $this->post('id_category', true),
             'id_detail' => $this->post('id_detail', true),
         );
+
         $insert = $product->createProduct($data);
         if ($insert > 0) {
             $this->response($data, 200);
@@ -73,26 +81,15 @@ class Product extends RestController{
         $this->load->helper(array('form', 'url'));
         $this->load->library('form_validation');
 
-        $data = array(
+        $data = [
             'name_product' => $this->put('name_product', true),
             'code_product' => $this->put('code_product', true), 
             'image' => $gambar,
             'id_category' => $this->put('id_category', true),
             'id_detail' => $this->put('id_detail', true),
-        );
-        $validasi = $product->getProductSpesific($where);
-        if ($validasi != False) {
-            $id = ['id' => $where];
-            $insert = $product->updateProduct($data, $id);
-            if ($insert != False) {
-                $this->response(['status' => $insert], 200);
-            } else {
-                $this->response($where, 502);
-            }
-        } else {
-            $this->response(array('status'=>'Update Failed, Data not Found'), 404);
-        }
-       
+        ];
+
+        $this->response($data, 200);
     }
 
     public function productSpesific_get($where){
@@ -137,11 +134,11 @@ class Product extends RestController{
 
     public function category_post(){
         $category = new ModelProduct;
-        $data = array(
-            'name_category' => $this->post('name_category', true),
-        );
-        $checkData = $category->getCategorySpesific($data);
-        if ($checkData != False) {
+        $checkData = $category->getCategoryByName($this->post('name_category', true));
+        if ($checkData == True) {
+            $data = [
+                'name_category' => $this->post('name_category', true),
+            ];
             $insert = $category->createCategory($data);
             if ($insert > 0) {
                 $this->response($data, 200);
@@ -149,9 +146,8 @@ class Product extends RestController{
                 $this->response(array('status' => 'fail'), 502);
             }
         } else {
-            $this->response(array('status'=>'Data Already Registered'),400);
+            $this->response(["status"=>"Already Registered"], 400);
         }
-
     }
 
     public function updateCategory_put($where){
@@ -210,14 +206,16 @@ class Product extends RestController{
         $data = [
             'short_description' => $this->input->post('short_description'),
             'long_description' => $this->input->post('long_description'),
-        ]
+        ];
         
         $insert = $detail->createDetail($data);
-        $this->response($insert, 200);
+        if ($insert > 0) {
+            $this->response($data, 200);
+        } else {
+            $this->response(array('status' => 'fail'), 502);
+        }
+
     }
-
-
-
 
     public function updateDetail_put($where){
         $detail = new ModelProduct;

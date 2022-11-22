@@ -64,6 +64,8 @@ $route['api/product'] = 'api/Product/index';
 $route['api/category'] = 'api/Product/category';
 $route['api/detail'] = 'api/Product/detail';
 
+$route['api/product/create'] = 'api/Product/createProduct';
+
 $route['api/category/detail/(:any)'] = 'api/Product/categorySpesific/$1';
 $route['api/detail/detail/(:any)'] = 'api/Product/detailSpesific/$1';
 $route['api/product/detail/(:any)'] = 'api/Product/productSpesific/$1';
