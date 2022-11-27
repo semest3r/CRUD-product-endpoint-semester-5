@@ -7,7 +7,7 @@ class ModelProduct extends CI_Model
   #Get section
     public function getProduct()
     {
-      $this->db->select('product.id as product_id, product.name_product, product.code_product, product.image, category.*, detail.*');
+      $this->db->select('product.id as product_id, product.name_product, product.code_product, product.image, category.*, detail.id as detail_id, detail.short_description, detail.long_description');
       $this->db->from('product');
       $this->db->join('category', 'category.id = product.id_category', 'inner');
       $this->db->join('detail', 'detail.id = product.id_detail', 'inner');

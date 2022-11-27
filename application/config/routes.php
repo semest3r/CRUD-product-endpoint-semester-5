@@ -78,6 +78,9 @@ $route['api/product/delete/(:any)'] = 'api/Product/deleteProduct/$1';
 $route['api/category/delete/(:any)'] = 'api/Product/deleteCategory/$1';
 $route['api/detail/delete/(:any)'] = 'api/Product/deleteDetail/$1';
 
+$route['api/test'] = 'api/Product/test';
+
+
 
 
 

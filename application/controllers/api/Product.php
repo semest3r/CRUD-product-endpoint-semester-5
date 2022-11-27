@@ -30,39 +30,36 @@ class Product extends RestController{
     public function createProduct_post(){
         $product = new ModelProduct;
 
-        $config['upload_path'] = './assets/img/upload/';
-        $config['allowed_types'] = 'jpg|png|jpeg';
-        $config['max_size'] = '3000';
-        $config['max_width'] = '1280';
-        $config['max_height'] = '1280';
-        $config['file_name'] = 'img' . time();
-        $this->load->library('upload', $config);
-        if ($this->upload->do_upload('image')) {
-            $image = $this->upload->data();
-            $gambar = $image['file_name'];
-        } else {
-            $gambar = 'default.jpg';
+        $decode = base64_decode($this->post('image', true));
+        if(!empty($decode)){
+            $im = imageCreateFromString($decode);
+            if (!$im) {
+                die('Base64 value is not a valid image');
+              }
+            $file_name = 'img'. time();
+            $img_file = './assets/img/'.$file_name.'.png';
+            imagepng($im, $img_file, 0);
+            $data = [
+                'name_product' => $this->post('name_product', true),
+                'code_product' => $this->post('code_product', true), 
+                'image' => $img_file,
+                'id_category' => $this->post('id_category', true),
+                'id_detail' => $this->post('id_detail', true),
+            ];
+            $insert = $product->createProduct($data);
+            if ($insert > 0) {
+                $this->response(['status'=>True], 200);
+            } else {
+                $this->response(array('status' => 'fail'), 502);
+            }
+        }else{
+            $this->response(['status'=>'gagal upload'], 400);
         }
-        $this->load->helper(array('form', 'url'));
-        $this->load->library('form_validation');
 
-        $data = array(
-            'name_product' => $this->post('name_product', true),
-            'code_product' => $this->post('code_product', true), 
-            'image' => $gambar,
-            'id_category' => $this->post('id_category', true),
-            'id_detail' => $this->post('id_detail', true),
-        );
 
-        $insert = $product->createProduct($data);
-        if ($insert > 0) {
-            $this->response($data, 200);
-        } else {
-            $this->response(array('status' => 'fail'), 502);
-        }
     }
 
-    public function updateProduct_put($where){
+    public function updateProduct_post($where){
         $product = new ModelProduct;
 
         $config['upload_path'] = './assets/img/upload/';
@@ -75,6 +72,7 @@ class Product extends RestController{
         if ($this->upload->do_upload('image')) {
             $image = $this->upload->data();
             $gambar = $image['file_name'];
+            $encode = base64_encode($gambar);
         } else {
             $gambar = 'default.jpg';
         }
@@ -82,11 +80,11 @@ class Product extends RestController{
         $this->load->library('form_validation');
 
         $data = [
-            'name_product' => $this->put('name_product', true),
-            'code_product' => $this->put('code_product', true), 
-            'image' => $gambar,
-            'id_category' => $this->put('id_category', true),
-            'id_detail' => $this->put('id_detail', true),
+            'name_product' => $this->input->post('name_product', true),
+            'code_product' => $this->input->post('code_product', true), 
+            'image' => $encode,
+            'id_category' => $this->input->post('id_category', true),
+            'id_detail' => $this->input->post('id_detail', true),
         ];
 
         $validasi = $product->getProductSpesific($where);
@@ -261,6 +259,26 @@ class Product extends RestController{
             }
         } else {
             $this->response(array('status'=>'Delete Failed'), 400);
+        }
+    }
+
+
+    public function test_post(){
+        $data = [
+            'image' => $this->input->post('image'),
+        ];
+        $decode = base64_decode($data['image']);
+        if(!empty($decode)){
+            $im = imageCreateFromString($decode);
+            if (!$im) {
+                die('Base64 value is not a valid image');
+              }
+            $file_name = 'img'. time();
+            $img_file = 'assets/img/'.$file_name.'.png';
+            imagepng($im, $img_file, 0);
+            $this->response($data, 200);
+        }else{
+            $this->response(['status'=>'gagal upload'], 400);
         }
     }
 };
