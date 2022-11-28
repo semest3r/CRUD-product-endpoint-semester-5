@@ -30,49 +30,16 @@ class Product extends RestController{
     public function createProduct_post(){
         $product = new ModelProduct;
 
-        $decode = base64_decode($this->post('image', true));
-        if(!empty($decode)){
-            $im = imageCreateFromString($decode);
-            if (!$im) {
-                die('Base64 value is not a valid image');
-              }
-            $file_name = 'img'. time();
-            $img_file = './assets/img/'.$file_name.'.png';
-            imagepng($im, $img_file, 0);
-            $data = [
-                'name_product' => $this->post('name_product', true),
-                'code_product' => $this->post('code_product', true), 
-                'image' => $img_file,
-                'id_category' => $this->post('id_category', true),
-                'id_detail' => $this->post('id_detail', true),
-            ];
-            $insert = $product->createProduct($data);
-            if ($insert > 0) {
-                $this->response(['status'=>True], 200);
-            } else {
-                $this->response(array('status' => 'fail'), 502);
-            }
-        }else{
-            $this->response(['status'=>'gagal upload'], 400);
-        }
-
-
-    }
-
-    public function updateProduct_post($where){
-        $product = new ModelProduct;
-
         $config['upload_path'] = './assets/img/upload/';
         $config['allowed_types'] = 'jpg|png|jpeg';
         $config['max_size'] = '3000';
-        $config['max_width'] = '1024';
-        $config['max_height'] = '1000';
+        $config['max_width'] = '1280';
+        $config['max_height'] = '1280';
         $config['file_name'] = 'img' . time();
         $this->load->library('upload', $config);
         if ($this->upload->do_upload('image')) {
             $image = $this->upload->data();
             $gambar = $image['file_name'];
-            $encode = base64_encode($gambar);
         } else {
             $gambar = 'default.jpg';
         }
@@ -80,25 +47,79 @@ class Product extends RestController{
         $this->load->library('form_validation');
 
         $data = [
-            'name_product' => $this->input->post('name_product', true),
-            'code_product' => $this->input->post('code_product', true), 
+            'name_product' => $this->post('name_product', true),
+            'code_product' => $this->post('code_product', true), 
             'image' => $encode,
-            'id_category' => $this->input->post('id_category', true),
-            'id_detail' => $this->input->post('id_detail', true),
+            'id_category' => $this->post('id_category', true),
+            'id_detail' => $this->post('id_detail', true),
         ];
 
+        $insert = $product->createProduct($data);
+        if ($insert > 0) {
+            $this->response($data, 200);
+        } else {
+            $this->response(array('status' => 'fail'), 502);
+        }
+    }
+
+    public function updateProduct_put($where){
+        $product = new ModelProduct;
         $validasi = $product->getProductSpesific($where);
+        $img_source = $this->put('image', true);
+        $old_file = $validasi->image;
         if ($validasi != False) {
-            $id = ['id' => $where];
-            $insert = $product->updateProduct($data, $id);
-            if ($insert != False) {
-                $this->response(['status' => $insert], 200);
+            if(!empty($img_source)){
+                $decode = base64_decode($img_source);
+                try {
+                    $im = imageCreateFromString($decode);
+                    if(!$im) {
+                        throw new Exception("Value is not a valid image");
+                    }
+                    $file_name = 'img'. time().'.png';
+                    $img_file = './assets/img/'.$file_name;
+                    $source_old = './assets/img/'.$old_file;
+                    if (file_exists($source_old)){
+                        unlink($source_old);
+                    }else{
+                        $this->response(['message'=>'gagal delete image'], 502);
+                    }
+                    imagepng($im, $img_file, 0);
+                    $data = [
+                        'name_product' => $this->put('name_product', true),
+                        'code_product' => $this->put('code_product', true), 
+                        'image' => $file_name,
+                        'id_category' => $this->put('id_category', true),
+                        'id_detail' => $this->put('id_detail', true),
+                    ];
+                    $id = ['id' => $where];
+                    $insert = $product->updateProduct($data, $id);
+                    if ($insert != False) {
+                        $this->response(['status' => True], 200);
+                    } else {
+                        $this->response($where, 502);
+                    }
+                } catch(Exception $e){
+                    $this->response(['message'=>$e->getMessage()], 400);
+                }
             } else {
-                $this->response($where, 502);
+                $data = [
+                    'name_product' => $this->put('name_product', true),
+                    'code_product' => $this->put('code_product', true), 
+                    'image' => $old_file,
+                    'id_category' => $this->put('id_category', true),
+                    'id_detail' => $this->put('id_detail', true),
+                ];
+                $id = ['id' => $where];
+                    $insert = $product->updateProduct($data, $id);
+                    if ($insert != False) {
+                        $this->response(['status' => True], 200);
+                    } else {
+                        $this->response($where, 502);
+                    }
             }
         } else {
-            $this->response(array('status'=>'Update Failed, Data not Found'), 404);
-        }
+            $this->response(array('message'=>'Update Failed, Data not Found'), 404);
+            }   
     }
 
     public function productSpesific_get($where){
